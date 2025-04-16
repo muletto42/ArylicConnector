@@ -22,11 +22,13 @@ ArylicUART::ArylicUART(SerialUART &serial)
 
 void ArylicUART::begin(unsigned long baud, int txPin, int rxPin)
 {
-    // Pins direkt in begin() setzen
-    _serial.setTX(txPin);
-    _serial.setRX(rxPin);
+// Pins direkt vor begin() setzen // FIXME TODO funktioniert noch nicht!!!
+    //_serial.setPinout(txPin, rxPin);
     _serial.begin(baud);
-    delay(100); // Kurze Verzögerung, damit sich die Verbindung stabilisiert
+   // _serial.setTX(txPin);
+   // _serial.setRX(rxPin);
+    
+    //delay(100); // Kurze Verzögerung, damit sich die Verbindung stabilisiert
 }
 
 void ArylicUART::sendRawCommandToArylic(const String &command)
