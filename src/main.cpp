@@ -17,7 +17,7 @@
  * Serial1 is UART0 --> KNX 
  * Serial2 is UART1 --> frei
  */
- #define ArylicUARTPORT Serial1  //auto& ArylicUART = Serial1; //das geht auch als Namensgeber
+ #define ArylicUARTPORT Serial2 // Serial2 = UART1 //auto& ArylicUART = Serial1; //das geht auch als Namensgeber
  #define ARYLIC_TX_PIN 6 // UART1 TX mit Amp RX verbinden //GP4 
  #define ARYLIC_RX_PIN 7 // UART1 RX mit Amp TX verbinden //GP5 
 //#define ARYLIC_TX			11 // UART1 TX mit Amp RX verbinden //GP8 
@@ -29,14 +29,14 @@ String userInput;
 
 void parseUserCommand(const String &line)
 {
-    if (line.startsWith("vol "))
+    if (line.startsWith("vol ") ||line.startsWith("VOL "))
     {
         int vol = line.substring(4).toInt();
         arylic.setVolume(vol);
     }
-    else if (line.startsWith("src "))
+    else if (line.startsWith("src ") || line.startsWith("SRC ") )
     {
-        String source = "NET";
+        String source = "";
         int src = line.substring(4).toInt();
         if (src == 1)
         {
@@ -60,19 +60,27 @@ void parseUserCommand(const String &line)
 
 void setup() 
 {
- 
-  Serial.begin(115200);
-  Serial.println("Serial0 Startet...");
- pinMode(LED_BUILTIN, OUTPUT);
-  //  UART-Verbindung zum AMP initialisieren
-//   arylic.begin(115200, ARYLIC_TX_PIN, ARYLIC_RX_PIN);
+    Serial.begin(115200);
+    Serial.println("Serial0 Startet...");
 
+    pinMode(LED_BUILTIN, OUTPUT);
+  //  UART-Verbindung zum AMP initialisieren
+    arylic.begin(115200, ARYLIC_TX_PIN, ARYLIC_RX_PIN); //PIN Zuordnung funktioniert noch nich! FIXME
 }
+  
+unsigned long lastHeartbeat = 0;
+const unsigned long heartbeatInterval = 5000;
 
 void loop()
 {
 #if DEBUG
   digitalWrite(LED_BUILTIN, millis() % 1000 > 500); // blinking LED 500ms an, 500ms aus Lifesign
+
+    if (millis() - lastHeartbeat >= heartbeatInterval) 
+    {
+      Serial.println("lebt");
+      lastHeartbeat = millis();
+    }
 #endif
 
 #if DEBUG
@@ -90,6 +98,6 @@ if (Serial.available()) {
 }
 #endif
   // Arylic-Daten verarbeiten
-//   arylic.loop();
+   arylic.loop();
 }
 
