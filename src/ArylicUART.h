@@ -42,8 +42,6 @@ public:
     SHUFFLE 	    shuffle and stop when all tracks played
     SEQUENCE 	    stop when reach end of playlist
     */
- 
-    String getNetworkPlayingState(void); // PLA network playing state
 
     void setVolume(int volume);
     void setMute(int onoff);
