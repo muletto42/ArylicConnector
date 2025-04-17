@@ -23,8 +23,7 @@
 //#define ARYLIC_TX			11 // UART1 TX mit Amp RX verbinden //GP8 
 //#define ARYLIC_RX	    12 // UART1 RX mit Amp TX verbinden //GP9 
 
-// ArylicUART arylic(ArylicUARTPORT, ARYLIC_TX_PIN, ARYLIC_RX_PIN);
-ArylicUART arylic(ArylicUARTPORT);
+ArylicUART arylic; //Objektdefinitionen
 String userInput;
 
 void parseUserCommand(const String &line)
@@ -65,7 +64,7 @@ void setup()
 
     pinMode(LED_BUILTIN, OUTPUT);
   //  UART-Verbindung zum AMP initialisieren
-    arylic.begin(115200, ARYLIC_TX_PIN, ARYLIC_RX_PIN); //PIN Zuordnung funktioniert noch nich! FIXME
+    //arylic.config(115200, ARYLIC_TX_PIN, ARYLIC_RX_PIN); //PIN Zuordnung funktioniert so nicht! FIXME wenn man das Aufruft dann zerlegt sich alles.
 }
   
 unsigned long lastHeartbeat = 0;

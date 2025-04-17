@@ -17,18 +17,14 @@
 
 #define DEBUG 1 // auskommentieren wenn nicht benötigt
 
-ArylicUART::ArylicUART(SerialUART &serial)
-    : _serial(serial) {}
-
-void ArylicUART::begin(unsigned long baud, int txPin, int rxPin)
+void ArylicUART::config(unsigned long baud, int txPin, int rxPin)
 {
-// Pins direkt vor begin() setzen // FIXME TODO funktioniert noch nicht!!!
-    //_serial.setPinout(txPin, rxPin);
+// Pins direkt vor begin() setzen FIXME TODO funktioniert noch nicht!!!//  
+    _serial.end();
+    _serial.setTX(txPin);
+    _serial.setRX(rxPin);
     _serial.begin(baud);
-   // _serial.setTX(txPin);
-   // _serial.setRX(rxPin);
-    
-    //delay(100); // Kurze Verzögerung, damit sich die Verbindung stabilisiert
+    delay(100); // Kurze Verzögerung, damit sich die Verbindung stabilisiert
 }
 
 void ArylicUART::sendRawCommandToArylic(const String &command)

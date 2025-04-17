@@ -4,10 +4,11 @@
 class ArylicUART {
 public:
     // Konstruktor: Übergibt die HardwareSerial-Instanz
-    ArylicUART(SerialUART &serial);
+    //ArylicUART(SerialUART &serial);
+    ArylicUART(SerialUART &serial = Serial2, unsigned long baud = 115200, int txPin=6, int rxPin=7) : _serial(serial), _baud(baud), _txPin(txPin), _rxPin(rxPin){};
 
     // Initialisierung der UART-Verbindung mit TX/RX Pins und Baudrate
-    void begin(unsigned long baud, int txPin, int rxPin);
+    void config(unsigned long baud, int txPin, int rxPin);
 
     // Methoden zum Senden von Befehlen und zum Steuern
     void sendRawCommandToArylic(const String& command);
@@ -62,6 +63,9 @@ private:
     void handleIncomingData(void);
 
     // Interne Variablen
+    unsigned long _baud = 115200;
+    int _txPin=6; 
+    int _rxPin=7;
     SerialUART& _serial;
     String _recvBuffer;
 };
