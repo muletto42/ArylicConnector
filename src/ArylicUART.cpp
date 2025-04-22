@@ -19,36 +19,61 @@
 
 void ArylicUART::config(unsigned long baud, int txPin, int rxPin)
 {
-// Pins direkt vor begin() setzen FIXME TODO funktioniert noch nicht!!!//  
-    _serial.end();
-    _serial.setTX(txPin);
-    _serial.setRX(rxPin);
+// Pins direkt vor begin() setzen // FIXME TODO funktioniert noch nicht!!!
+    //_serial.setPinout(txPin, rxPin);
     _serial.begin(baud);
-    delay(100); // Kurze Verzögerung, damit sich die Verbindung stabilisiert
+   // _serial.setTX(txPin);
+   // _serial.setRX(rxPin);
+    
+    //delay(100); // Kurze Verzögerung, damit sich die Verbindung stabilisiert
 }
 
 void ArylicUART::sendRawCommandToArylic(const String &command)
 {
     _serial.flush(); // Wartet, bis die Übertragung der ausgehenden seriellen Daten abgeschlossen ist.
     _serial.print(command + "\r\n");
-    #if DEBUG
-        Serial.print("[SEND] ");
-        Serial.println(command);
-    #endif
+#if DEBUG
+    Serial.print("[SEND] ");
+    Serial.println(command);
+#endif
 }
 
-
-void ArylicUART::setLoopShuffleMode(const String& loopmode) //LPM[:{loopmode}]   set/get loop and shuffle mode, available in network playback. 
+void ArylicUART::setLoopShuffleMode(const String &loopmode) // LPM[:{loopmode}]   set/get loop and shuffle mode, available in network playback.
 {
-        /*
-        {loopmode} 	    description
-        REPEATALL 	    repeat all in playlist
-        REPEATONE 	    repeat track
-        REPEATSHUFFLE 	repeat all and shuffle
-        SHUFFLE 	    shuffle and stop when all tracks played
-        SEQUENCE 	    stop when reach end of playlist
-        */
+    /*
+    {loopmode} 	    description
+    REPEATALL 	    repeat all in playlist
+    REPEATONE 	    repeat track
+    REPEATSHUFFLE 	repeat all and shuffle
+    SHUFFLE 	    shuffle and stop when all tracks played
+    SEQUENCE 	    stop when reach end of playlist
+    */
     sendRawCommandToArylic("LPM:" + loopmode);
+}
+
+void ArylicUART::playPause() // POP play or pause, available in network playback and bluetooth
+{
+    sendRawCommandToArylic("POP");
+}
+
+void ArylicUART::stop() // STP stop, available only in network playback
+{
+    sendRawCommandToArylic("STP");
+}
+
+void ArylicUART::next() // NXT next track, available in network playback and bluetooth
+{
+    sendRawCommandToArylic("NXT");
+}
+
+void ArylicUART::previous() // PRE previous track, available in network playback and bluetooth
+{
+    sendRawCommandToArylic("PRE");
+}
+
+void ArylicUART::playPreset(int presetNum) // start to play preset playlist
+{
+    sendRawCommandToArylic("VOL:" + String(presetNum));
 }
 
 void ArylicUART::setVolume(int volume)
@@ -57,7 +82,7 @@ void ArylicUART::setVolume(int volume)
     sendRawCommandToArylic("VOL:" + String(volume));
 }
 
-void ArylicUART::setSource(const String& source) // SRC
+void ArylicUART::setSource(const String &source) // SRC
 {
     sendRawCommandToArylic("SRC:" + source);
 }
@@ -79,9 +104,9 @@ void ArylicUART::handleIncomingData(void)
     {
         String receivedData = _serial.readStringUntil('\n');
         receivedData.trim(); // Entfernt alle führenden und nachfolgenden Leerzeichen aus der aktuellen Zeichenfolge.
-        #if DEBUG
-            Serial.println("Empfangen: " + receivedData);
-        #endif
+#if DEBUG
+        Serial.println("Empfangen: " + receivedData);
+#endif
         int separatorIndex = receivedData.indexOf(':');
         if (separatorIndex > 0 && separatorIndex < receivedData.length() - 1)
         {
@@ -92,26 +117,26 @@ void ArylicUART::handleIncomingData(void)
             if (commandType == "VOL")
             {
                 currentVolume = commandValue.toInt();
-                #if DEBUG
-                    Serial.print("[INFO] Lautstärke aktualisiert: ");
-                    Serial.println(currentVolume);
-                #endif
+#if DEBUG
+                Serial.print("[INFO] Lautstärke aktualisiert: ");
+                Serial.println(currentVolume);
+#endif
             }
             else if (commandType == "SRC")
             {
                 currentSource = commandValue;
-                #if DEBUG
-                    Serial.print("[INFO] Quelle aktualisiert: ");
-                    Serial.println(currentSource);
-                #endif
+#if DEBUG
+                Serial.print("[INFO] Quelle aktualisiert: ");
+                Serial.println(currentSource);
+#endif
             }
             else if (commandType == "MUT")
             {
                 muteMode = (bool)commandValue.toInt();
-                #if DEBUG
-                    Serial.print("[INFO] Mute Status: ");
-                    Serial.println(muteMode);
-                #endif
+#if DEBUG
+                Serial.print("[INFO] Mute Status: ");
+                Serial.println(muteMode);
+#endif
             }
             else
             {
@@ -120,4 +145,3 @@ void ArylicUART::handleIncomingData(void)
         }
     }
 }
-
