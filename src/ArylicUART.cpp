@@ -121,71 +121,64 @@ void ArylicUART::setMute(int onoff)
 // will be called once a KO received a telegram
 void ArylicUART::processInputKo(GroupObject &iKo)
 {
-
-    switch (iKo.asap())
+    uint16_t lAsap = iKo.asap();
+    switch (lAsap)
     {
-    case KoAPP_Volume_INC: // Increase ++
-    {
-        currentVolume = iKo.value(DPT_Step);
-        if (currentVolume >= 100)
+        case APP_Kovolume_inc: // Increase ++
         {
-            currentVolume = 100;
+            if (KoAPP_volume_inc.value(DPT_Step))
+            {
+                currentVolume++;
+            }
+            else
+            {
+                currentVolume--;
+            }
+            setVolume(currentVolume);
+            logDebugP("setVolume: %d", currentVolume);
         }
-    }
-    break;
-    case KoAPP_Volume_DEC: // Decrease --
-    {
-        currentVolume = iKo.value(DPT_Step);
-        if (currentVolume <= 0)
+        break;
+        case APP_Kovolume_dec: // Decrease --
         {
-            currentVolume = 0;
+            if (KoAPP_volume_inc.value(DPT_Step))
+            {
+                currentVolume++;
+            }
+            else
+            {
+                currentVolume--;
+            }
+            setVolume(currentVolume);
+            logDebugP("setVolume: %d", currentVolume);
         }
-    }
-    break;
-    case KoAPP_Volume_SET: // SET
-    {
-        currentVolume = iKo.value(DPT_Percent_U8);
-        if (currentVolume >= 100)
+        break;
+        case APP_Kovolume_value: // SET
         {
-            currentVolume = 100;
+            currentVolume = (u_int8_t)KoAPP_volume_value.value(DPT_Scaling);
+            setVolume(currentVolume);
+            logDebugP("setVolume: %d", currentVolume);
         }
-        if (currentVolume <= 0)
+        break;
+        case APP_Komute_onoff:
         {
-            currentVolume = 0;
         }
-    }
-    break;
-    case KoAPP_Mute_onoff:
-    {
-
-    }
-    break;
-    case KoAPP_PlayPause:
-    {
-    }
-    break;
-    case KoAPP_stop:
-    {
-    }
-    break;
-    case KoAPP_next:
-    {
-    }
-    break;
-    case KoAPP_source:
-    {
-    }
-    break;
-    case default:
-    {
-    }
-
-        // if (iKo.asap() == KoAPP_onoff.asap())
-        // {
-        //     ledActive = iKo.value(DPT_Switch);
-        //     Serial.print("Switch Callback ");
-        //     Serial.println(ledActive ? "True" : "False");
-        // }
+        break;
+        case APP_KoPlayPause:
+        {
+        }
+        break;
+        case APP_KoStop:
+        {
+        }
+        break;
+        case APP_KoNext:
+        {
+        }
+        break;
+        case APP_Kosource:
+        {
+        }
+        break;
     }
 }
 
