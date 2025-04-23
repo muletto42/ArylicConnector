@@ -6,9 +6,6 @@ class ArylicUART : public OpenKNX::Module
 public:
     const std::string name() override;
     const std::string version() override;
-    const uint8_t _major = MODULE_FileTransferModule_Version_Major; // also update library.json
-    const uint8_t _minor = MODULE_FileTransferModule_Version_Minor;
-    const uint8_t _revision = MODULE_FileTransferModule_Version_Revision;
     void loop() override;
     void setup() override;
 

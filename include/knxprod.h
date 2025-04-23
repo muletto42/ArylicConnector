@@ -67,3 +67,7 @@
 #define APP_KoNext 23
 #define KoAPP_Next knx.getGroupObject(APP_KoNext)
 
+
+//!< Number: 24, Text: Dummy, Function: Dummy
+#define APP_KoPREV 24
+#define KoAPP_prev knx.getGroupObject(APP_KoPREV)

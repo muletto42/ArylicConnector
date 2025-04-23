@@ -161,22 +161,36 @@ void ArylicUART::processInputKo(GroupObject &iKo)
         break;
         case APP_Komute_onoff:
         {
+            muteMode = KoAPP_mute_onoff.value(DPT_Switch);
+            setMute(muteMode);
+            logDebugP("MuteMode: %d", muteMode);
         }
         break;
         case APP_KoPlayPause:
         {
+            playPause();
         }
         break;
         case APP_KoStop:
         {
+            stop();
         }
         break;
         case APP_KoNext:
         {
+            next();
+        }
+        break;
+        case APP_KoPREV:
+        {
+            previous();
         }
         break;
         case APP_Kosource:
         {
+            currentSource = KoAPP_volume_value.value(DPT_String_ASCII);
+            setSource(currentSource);
+            logDebugP("setSource: %s", currentSource);
         }
         break;
     }
@@ -189,44 +203,34 @@ void ArylicUART::processInputKo(GroupObject &iKo)
         {
             String receivedData = _serial.readStringUntil('\n');
             receivedData.trim(); // Entfernt alle führenden und nachfolgenden Leerzeichen aus der aktuellen Zeichenfolge.
-#if DEBUG
-        Serial.println("Empfangen: " + receivedData);
-#endif
-        int separatorIndex = receivedData.indexOf(':');
-        if (separatorIndex > 0 && separatorIndex < receivedData.length() - 1)
-        {
-            String commandType = receivedData.substring(0, separatorIndex);
-            String commandValue = receivedData.substring(separatorIndex + 1);
+            logDebugP("Empfangen: : %s", receivedData);
 
-            // Daten auswerten
-            if (commandType == "VOL")
+            int separatorIndex = receivedData.indexOf(':');
+            if (separatorIndex > 0 && separatorIndex < receivedData.length() - 1)
             {
-                currentVolume = commandValue.toInt();
-#if DEBUG
-                Serial.print("[INFO] Lautstärke aktualisiert: ");
-                Serial.println(currentVolume);
-#endif
-            }
-            else if (commandType == "SRC")
-            {
-                currentSource = commandValue;
-#if DEBUG
-                Serial.print("[INFO] Quelle aktualisiert: ");
-                Serial.println(currentSource);
-#endif
-            }
-            else if (commandType == "MUT")
-            {
-                muteMode = (bool)commandValue.toInt();
-#if DEBUG
-                Serial.print("[INFO] Mute Status: ");
-                Serial.println(muteMode);
-#endif
-            }
-            else
-            {
-                // Erweiterungen
-            }
+                String commandType = receivedData.substring(0, separatorIndex);
+                String commandValue = receivedData.substring(separatorIndex + 1);
+
+                // Daten auswerten
+                if (commandType == "VOL")
+                {
+                    currentVolume = commandValue.toInt();
+                    logDebugP("[INFO] Lautstärke aktualisiert:  %d", currentVolume);
+                }
+                else if (commandType == "SRC")
+                {
+                    currentSource = commandValue;
+                    logDebugP("[INFO] Quelle aktualisiert: %s", currentSource);
+                }
+                else if (commandType == "MUT")
+                {
+                    muteMode = (bool)commandValue.toInt();
+                    logDebugP("[INFO] Mute Status:  %d", muteMode);
+                }
+                else
+                {
+                    // Erweiterungen
+                }
         }
     }
 }
