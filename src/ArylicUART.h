@@ -1,12 +1,21 @@
-#pragma once
+#include "OpenKNX.h"
 #include <Arduino.h>
 
-class ArylicUART {
+class ArylicUART : public OpenKNX::Module
+{
 public:
+    const std::string name() override;
+    const std::string version() override;
+    const uint8_t _major = MODULE_FileTransferModule_Version_Major; // also update library.json
+    const uint8_t _minor = MODULE_FileTransferModule_Version_Minor;
+    const uint8_t _revision = MODULE_FileTransferModule_Version_Revision;
+    void loop() override;
+    void setup() override;
+
     // Konstruktor: Übergibt die HardwareSerial-Instanz
     //ArylicUART(SerialUART &serial);
     ArylicUART(SerialUART &serial = Serial2, unsigned long baud = 115200, int txPin=6, int rxPin=7) : _serial(serial), _baud(baud), _txPin(txPin), _rxPin(rxPin){};
-
+    
     // Initialisierung der UART-Verbindung mit TX/RX Pins und Baudrate
     void config(unsigned long baud, int txPin, int rxPin);
 
@@ -47,8 +56,8 @@ public:
     void setVolume(int volume);
     void setMute(int onoff);
 
-    // Hauptloop zur Verarbeitung von eingehenden Daten
-    void loop();
+
+    void processInputKo(GroupObject &ko) override;
 
     // Öffentliche Variablen für Lautstärke und Quelle
     int currentVolume = -1;
@@ -67,3 +76,5 @@ private:
     SerialUART& _serial;
     String _recvBuffer;
 };
+
+extern ArylicUART openknxArylicUARTModule;

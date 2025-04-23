@@ -14,8 +14,34 @@
 */
 
 #include "ArylicUART.h"
+#include "versions.h"
 
 #define DEBUG 1 // auskommentieren wenn nicht benötigt
+
+// Give your Module a name
+// it will be displayed when you use the method log("Hello")
+//  -> Log     Hello
+const std::string ArylicUART::name()
+{
+    return "ArylicUART";
+}
+
+// You can also give it a version
+// will be displayed in Command Infos
+const std::string ArylicUART::version()
+{
+    return MAIN_Version;
+}
+
+void ArylicUART::loop()
+{
+    handleIncomingData();
+}
+
+void ArylicUART::setup()
+{
+  
+}
 
 void ArylicUART::config(unsigned long baud, int txPin, int rxPin)
 {
@@ -92,18 +118,84 @@ void ArylicUART::setMute(int onoff)
     sendRawCommandToArylic("MUT:" + String(onoff));
 }
 
-void ArylicUART::loop()
+// will be called once a KO received a telegram
+void ArylicUART::processInputKo(GroupObject &iKo)
 {
-    handleIncomingData();
+
+    switch (iKo.asap())
+    {
+    case KoAPP_Volume_INC: // Increase ++
+    {
+        currentVolume = iKo.value(DPT_Step);
+        if (currentVolume >= 100)
+        {
+            currentVolume = 100;
+        }
+    }
+    break;
+    case KoAPP_Volume_DEC: // Decrease --
+    {
+        currentVolume = iKo.value(DPT_Step);
+        if (currentVolume <= 0)
+        {
+            currentVolume = 0;
+        }
+    }
+    break;
+    case KoAPP_Volume_SET: // SET
+    {
+        currentVolume = iKo.value(DPT_Percent_U8);
+        if (currentVolume >= 100)
+        {
+            currentVolume = 100;
+        }
+        if (currentVolume <= 0)
+        {
+            currentVolume = 0;
+        }
+    }
+    break;
+    case KoAPP_Mute_onoff:
+    {
+
+    }
+    break;
+    case KoAPP_PlayPause:
+    {
+    }
+    break;
+    case KoAPP_stop:
+    {
+    }
+    break;
+    case KoAPP_next:
+    {
+    }
+    break;
+    case KoAPP_source:
+    {
+    }
+    break;
+    case default:
+    {
+    }
+
+        // if (iKo.asap() == KoAPP_onoff.asap())
+        // {
+        //     ledActive = iKo.value(DPT_Switch);
+        //     Serial.print("Switch Callback ");
+        //     Serial.println(ledActive ? "True" : "False");
+        // }
+    }
 }
 
-void ArylicUART::handleIncomingData(void)
-{
-    // UART-Daten lesen
-    if (_serial.available() > 0)
+    void ArylicUART::handleIncomingData(void)
     {
-        String receivedData = _serial.readStringUntil('\n');
-        receivedData.trim(); // Entfernt alle führenden und nachfolgenden Leerzeichen aus der aktuellen Zeichenfolge.
+        // UART-Daten lesen
+        if (_serial.available() > 0)
+        {
+            String receivedData = _serial.readStringUntil('\n');
+            receivedData.trim(); // Entfernt alle führenden und nachfolgenden Leerzeichen aus der aktuellen Zeichenfolge.
 #if DEBUG
         Serial.println("Empfangen: " + receivedData);
 #endif
@@ -145,3 +237,5 @@ void ArylicUART::handleIncomingData(void)
         }
     }
 }
+
+ArylicUART openknxArylicUARTModule;

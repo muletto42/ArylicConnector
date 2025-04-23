@@ -1,22 +1,47 @@
-/*
-// Arduino-Pico core for RP2040 
-// https://arduino-pico.readthedocs.io/en/latest/
-*/
-
-
-
 #include <Arduino.h>
+#include "OpenKNX.h"
+#include "FileTransferModule.h"
+#include "UsbExchangeModule.h"
 #include "ArylicUART.h"
+#include "BlinkModule.h" // TESTS
 
+void setup()
+{
+    //Bei Firmwareänderungen, die keine neue knxprod benötigen, kann die Revision erhöht werden.  // change this also in library.json
+    const uint8_t firmwareRevision = 0;
+    openknx.init(firmwareRevision);
+
+    openknx.addModule(9, openknxFileTransferModule);
+    openknx.addModule(8, openknxUsbExchangeModule);
+
+    // //openknx.addModule(1, openknxLogic);
+
+    openknx.addModule(1, openknxBlinkModule);
+    openknx.addModule(2, openknxArylicUARTModule);
+
+    openknx.setup();
+}
+
+void loop()
+{
+    openknx.loop();
+}
+
+
+
+
+
+
+/*
 //#define DEBUG 0
 #define DEBUG 1
 
- /*
- * Serial is the USB serial port
- * The RP2040 provides two hardware-based UARTS with configurable pin selection.
- * Serial1 is UART0 --> KNX 
- * Serial2 is UART1 --> frei
- */
+ 
+ // Serial is the USB serial port
+ // The RP2040 provides two hardware-based UARTS with configurable pin selection.
+ // Serial1 is UART0 --> KNX 
+ // Serial2 is UART1 --> frei
+ 
  #define ArylicUARTPORT Serial2 // Serial2 = UART1 //auto& ArylicUART = Serial1; //das geht auch als Namensgeber
  #define ARYLIC_TX_PIN 6 // UART1 TX mit Amp RX verbinden //GP4 
  #define ARYLIC_RX_PIN 7 // UART1 RX mit Amp TX verbinden //GP5 
@@ -100,3 +125,4 @@ if (Serial.available()) {
    arylic.loop();
 }
 
+*/
