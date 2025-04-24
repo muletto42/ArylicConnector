@@ -9,8 +9,8 @@
 //--------------------Allgemein---------------------------
 #define MAIN_OpenKnxId 0xFA
 #define MAIN_ApplicationNumber 0x02
-#define MAIN_ApplicationVersion 0x02
-#define MAIN_OrderNumber "ARCCON"
+#define MAIN_ApplicationVersion 0x01
+#define MAIN_OrderNumber "ArylicConnector"
 #define MAIN_ParameterSize 3
 #define MAIN_MaxKoNumber 30
 
@@ -67,7 +67,3 @@
 #define APP_KoNext 23
 #define KoAPP_Next knx.getGroupObject(APP_KoNext)
 
-
-//!< Number: 24, Text: Dummy, Function: Dummy
-#define APP_KoPREV 24
-#define KoAPP_prev knx.getGroupObject(APP_KoPREV)
