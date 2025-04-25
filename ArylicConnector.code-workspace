@@ -3,6 +3,24 @@
 		{
 			"path": "."
 		}
+		{
+			"path": "./../OFM-Logicmodule"
+		},
+		{
+			"path": "../OGM-Common"
+		},
+		{
+			"path": "../OFM-VirtualButton"
+		},
+		{
+			"path": "../OFM-ConfigTransfer"
+		},
+		{
+			"path": "../OFM-FileTransferModule"
+		},
+		{
+			"path": "../knx"
+		}
 	],
 	"settings": {}
 }
