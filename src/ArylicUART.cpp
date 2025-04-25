@@ -40,6 +40,7 @@ void ArylicUART::loop()
 
 void ArylicUART::setup()
 {
+    
   
 }
 
@@ -181,7 +182,7 @@ void ArylicUART::processInputKo(GroupObject &iKo)
             next();
         }
         break;
-        case APP_KoPREV:
+        case APP_KoPrev:
         {
             previous();
         }
@@ -196,41 +197,123 @@ void ArylicUART::processInputKo(GroupObject &iKo)
     }
 }
 
-    void ArylicUART::handleIncomingData(void)
+void ArylicUART::handleIncomingData(void)
+{
+    // UART-Daten lesen
+    if (_serial.available() > 0)
     {
-        // UART-Daten lesen
-        if (_serial.available() > 0)
+        String receivedData = _serial.readStringUntil('\n');
+        receivedData.trim(); // Entfernt alle führenden und nachfolgenden Leerzeichen aus der aktuellen Zeichenfolge.
+        logDebugP("Empfangen: : %s", receivedData);
+
+        int separatorIndex = receivedData.indexOf(':');
+        if (separatorIndex > 0 && separatorIndex < receivedData.length() - 1)
         {
-            String receivedData = _serial.readStringUntil('\n');
-            receivedData.trim(); // Entfernt alle führenden und nachfolgenden Leerzeichen aus der aktuellen Zeichenfolge.
-            logDebugP("Empfangen: : %s", receivedData);
+            String commandType = receivedData.substring(0, separatorIndex);
+            String commandValue = receivedData.substring(separatorIndex + 1);
 
-            int separatorIndex = receivedData.indexOf(':');
-            if (separatorIndex > 0 && separatorIndex < receivedData.length() - 1)
-            {
-                String commandType = receivedData.substring(0, separatorIndex);
-                String commandValue = receivedData.substring(separatorIndex + 1);
+            // Daten auswerten
+            processUARTCommand(commandType, commandValue);
+        }
+    }
+}
 
-                // Daten auswerten
-                if (commandType == "VOL")
-                {
-                    currentVolume = commandValue.toInt();
-                    logDebugP("[INFO] Lautstärke aktualisiert:  %d", currentVolume);
-                }
-                else if (commandType == "SRC")
-                {
-                    currentSource = commandValue;
-                    logDebugP("[INFO] Quelle aktualisiert: %s", currentSource);
-                }
-                else if (commandType == "MUT")
-                {
-                    muteMode = (bool)commandValue.toInt();
-                    logDebugP("[INFO] Mute Status:  %d", muteMode);
-                }
-                else
-                {
-                    // Erweiterungen
-                }
+/*---------------------------------------------------------------------------------------------------
+                      Funktion zur Verarbeitung empfangener UART-Kommandos
+ ---------------------------------------------------------------------------------------------------*/
+void ArylicUART::processUARTCommand(const String &commandType, const String &commandValue)
+{
+    // Logik zum Verarbeiten der UART-Kommandos vom ArlyicAmp
+
+    if (commandType == "SRC")
+    {
+        currentSource = commandValue;
+        logDebugP("[INFO] Quelle aktualisiert: %s", currentSource);
+    }
+    else if (commandType == "VOL")
+    {
+        currentVolume = commandValue.toInt();
+        logDebugP("[INFO] Lautstärke aktualisiert:  %d", currentVolume);
+    }
+    else if (commandType == "MUT")
+    {
+        muteMode = (bool)commandValue.toInt();
+        logDebugP("[INFO] Mute Status:  %d", muteMode);
+    }
+    else if (commandType == "BAS")
+    {
+        // dispBass = commandValue.toInt();
+        // showNumberParam("Bass", dispBass);
+    }
+    else if (commandType == "TRE")
+    {
+        // dispTreble = commandValue.toInt();
+        // showNumberParam("Treble", dispTreble);
+    }
+    //    else if (commandType == "CHN") {
+    //      if (commandValue == "L;") {
+    //          dispChannel = "LEFT";
+    //      } else if (commandValue == "R;") {
+    //          dispChannel = "RIGHT";
+    //      } else if (commandValue == "S;") {
+    //          dispChannel = "STEREO";
+    //      } else {
+    //          dispChannel = "Unknown";
+    //      }
+    //      //showNumberParamTwo("CHN", dispChannel);
+
+    else if (commandType == "LED")
+    {
+        if (commandValue == "1;")
+        {
+            logDebugP("LED ON");
+            // digitalWrite(LED_PIN, HIGH);
+            Serial.println("LED eingeschaltet");
+        }
+        else if (commandValue == "0;")
+        {
+            logDebugP("LED OFF");
+            // digitalWrite(LED_PIN, LOW);
+            Serial.println("LED ausgeschaltet");
+        }
+    }
+    else if (commandType == "BTC")
+    {
+        if (commandValue == "1;")
+        {
+            bluetoothConnected = true;
+            logDebugP("Bluetooth Connected");
+        }
+        else if (commandValue == "0;")
+        {
+            bluetoothConnected = false;
+            logDebugP("Bluetooth Disconnect");
+        }
+    }
+    else if (commandType == "VBS")
+    {
+        if (commandValue == "1;")
+        {
+            virtualBassEnabled = true;
+            logDebugP("virtualBass VBS ON");
+        }
+        else if (commandValue == "0;")
+        {
+            virtualBassEnabled = false;
+            logDebugP("virtualBass VBS OFF");
+        }
+    }
+    else if (commandType == "BEP")
+    {
+        if (commandValue == "1;")
+        {
+            beepEnabled = true;
+            logDebugP("BEEP ON");
+        }
+        else if (commandValue == "0;")
+        {
+            beepEnabled = false;
+            logDebugP("BEEP OFF");
         }
     }
 }

@@ -8,8 +8,8 @@
                                             (time & 0x3FFF) * 3600000 ) : 0 )
 //--------------------Allgemein---------------------------
 #define MAIN_OpenKnxId 0xFA
-#define MAIN_ApplicationNumber 0x02
-#define MAIN_ApplicationVersion 0x02
+#define MAIN_ApplicationNumber 0x42
+#define MAIN_ApplicationVersion 0x2A
 #define MAIN_OrderNumber "ARCCON"
 #define MAIN_ParameterSize 3
 #define MAIN_MaxKoNumber 30
@@ -66,8 +66,7 @@
 //!< Number: 23, Text: Dummy, Function: Dummy
 #define APP_KoNext 23
 #define KoAPP_Next knx.getGroupObject(APP_KoNext)
-
-
 //!< Number: 24, Text: Dummy, Function: Dummy
-#define APP_KoPREV 24
-#define KoAPP_prev knx.getGroupObject(APP_KoPREV)
+#define APP_KoPrev 24
+#define KoAPP_Prev knx.getGroupObject(APP_KoPrev)
+

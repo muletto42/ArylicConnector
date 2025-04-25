@@ -3,7 +3,7 @@
 #include "FileTransferModule.h"
 #include "UsbExchangeModule.h"
 #include "ArylicUART.h"
-#include "BlinkModule.h" // TESTS
+
 
 void setup()
 {
@@ -14,9 +14,8 @@ void setup()
     openknx.addModule(9, openknxFileTransferModule);
     openknx.addModule(8, openknxUsbExchangeModule);
 
-    // //openknx.addModule(1, openknxLogic);
+    //openknx.addModule(1, openknxLogic);
 
-    openknx.addModule(1, openknxBlinkModule);
     openknx.addModule(2, openknxArylicUARTModule);
 
     openknx.setup();

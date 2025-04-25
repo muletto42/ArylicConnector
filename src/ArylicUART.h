@@ -1,5 +1,6 @@
 #include "OpenKNX.h"
 #include <Arduino.h>
+#include "hardware.h"
 
 class ArylicUART : public OpenKNX::Module
 {
@@ -60,16 +61,18 @@ public:
     int currentVolume = -1;
     String currentSource = "initValue";
     bool muteMode = false;  // Speichert den MUTE-Zustand
-
-
+    bool beepEnabled = false;
+    bool virtualBassEnabled = false; 
+    bool bluetoothConnected = false; 
 private:
     // Private Methode zur Verarbeitung von empfangenen Zeilen
     void handleIncomingData(void);
+    void processUARTCommand(const String& commandType, const String& commandValue);
 
     // Interne Variablen
     unsigned long _baud = 115200;
-    int _txPin=6; 
-    int _rxPin=7;
+    int _txPin=ARYLIC_TX_PIN; 
+    int _rxPin=ARYLIC_RX_PIN;
     SerialUART& _serial;
     String _recvBuffer;
 };
