@@ -8,8 +8,8 @@
                                             (time & 0x3FFF) * 3600000 ) : 0 )
 #define PT_Source_network 0
 #define PT_Source_bluetooth 1
-#define PT_Source_USB DAC 2
-#define PT_Source_line-in 3
+#define PT_Source_USBDAC 2
+#define PT_Source_linein 3
 #define PT_Source_Optical 4
 #define PT_Source_Coaxial 5
 //--------------------Allgemein---------------------------
@@ -18,7 +18,7 @@
 #define MAIN_ApplicationVersion 0x02
 #define MAIN_OrderNumber "ArylicConnector"
 #define MAIN_ParameterSize 3
-#define MAIN_MaxKoNumber 10
+#define MAIN_MaxKoNumber 11
 
 
 #define APP_color		0x0000
@@ -42,9 +42,9 @@
 #define APP_Source_Mask	0x0007
 // Offset: 0, BitOffset: 3, Size: 3 Bit, Text: Quelle
 #define ParamAPP_Source ((uint32_t)((knx.paramByte(APP_Source) >> APP_Source_Shift) & APP_Source_Mask))
-#define APP_mute		0xFFFFFFFF
-// Offset: -1, Size: 1 Bit, Text: Dummy
-#define ParamAPP_mute knx.paramBit(APP_mute, -1)
+#define APP_mute		0x0000
+// Offset: 0, BitOffset: 6, Size: 1 Bit, Text: Dummy
+#define ParamAPP_mute knx.paramBit(APP_mute, 6)
 //!< Number: 1, Text: LED, Function: Schalten
 #define APP_Koonoff 1
 #define KoAPP_onoff knx.getGroupObject(APP_Koonoff)
@@ -75,7 +75,7 @@
 //!< Number: 10, Text: Next, Function: Dummy
 #define APP_KoNext 10
 #define KoAPP_Next knx.getGroupObject(APP_KoNext)
-//!< Number: 10, Text: Previous, Function: Dummy
-#define APP_KoPrev 10
+//!< Number: 11, Text: Previous, Function: Dummy
+#define APP_KoPrev 11
 #define KoAPP_Prev knx.getGroupObject(APP_KoPrev)
 

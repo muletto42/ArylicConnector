@@ -216,7 +216,7 @@
         "SizeInBit": 7,
         "OtherValue": true,
         "ExportInHeader": false,
-        "UIHint": "None",
+        "UIHint": "Slider",
         "BaggageUId": -1,
         "Min": "0",
         "Max": "100",
@@ -285,7 +285,7 @@
           },
           {
             "$type": "Kaenx.Creator.Models.ParameterTypeEnum, Kaenx.Creator.Share",
-            "Name": "USB DAC",
+            "Name": "USBDAC",
             "Value": 2,
             "UseIcon": false,
             "IconId": -1,
@@ -305,7 +305,7 @@
           },
           {
             "$type": "Kaenx.Creator.Models.ParameterTypeEnum, Kaenx.Creator.Share",
-            "Name": "line-in",
+            "Name": "linein",
             "Value": 3,
             "UseIcon": false,
             "IconId": -1,
@@ -398,8 +398,8 @@
                   "CultureCode": "de-DE",
                   "Text": "Deutsch"
                 },
-                "Text": "nicht stumm",
-                "Preview": "nicht stumm"
+                "Text": "aktiv",
+                "Preview": "aktiv"
               }
             ]
           },
@@ -409,7 +409,7 @@
             "Value": 1,
             "UseIcon": false,
             "IconId": -1,
-            "Translate": false,
+            "Translate": true,
             "Text": [
               {
                 "$type": "Kaenx.Creator.Models.Translation, Kaenx.Creator.Share",
@@ -642,8 +642,8 @@
         "UId": 6,
         "Id": 21,
         "Name": "mute",
-        "SavePath": 2,
-        "MemoryId": -1,
+        "SavePath": 1,
+        "MemoryId": 1,
         "UnionId": 0,
         "ParameterType": 5,
         "Value": "1",
@@ -2761,7 +2761,7 @@
           }
         ],
         "TranslationFunctionText": false,
-        "Number": 10,
+        "Number": 11,
         "FlagRead": false,
         "FlagWrite": false,
         "FlagTrans": false,
@@ -3561,7 +3561,7 @@
         "OverwriteFW": false,
         "FlagTrans": false,
         "OverwriteFT": false,
-        "FlagComm": true,
+        "FlagComm": false,
         "OverwriteFC": false,
         "FlagUpdate": false,
         "OverwriteFU": false,
