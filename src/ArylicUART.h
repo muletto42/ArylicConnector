@@ -15,12 +15,13 @@ public:
     ArylicUART(SerialUART &serial = Serial2, unsigned long baud = 115200, int txPin=6, int rxPin=7) : _serial(serial), _baud(baud), _txPin(txPin), _rxPin(rxPin){};
     
     // Initialisierung der UART-Verbindung mit TX/RX Pins und Baudrate
-    void config(unsigned long baud, int txPin, int rxPin);
+    // void config(unsigned long baud, int txPin, int rxPin);
 
     // Methoden zum Senden von Befehlen und zum Steuern
     void sendRawCommandToArylic(const String& command);
 
-    /*Playback*/
+  
+    void setSource(uint sourcenumber); // SRC 
     void setSource(const String& source); // SRC
     /*
     {source} 	description
@@ -30,10 +31,6 @@ public:
     LINE-IN 	line-in
     OPT 	    Optical
     COAX 	    Coaxial
-    LINE-IN2 	extra line-in
-    OPT2 	    extra Optical
-    COAX2 	    extra Coaxial
-    HDMI 	    HDMI ARC
     */
 
     void playPause(); //POP play or pause, available in network playback and bluetooth
@@ -58,8 +55,8 @@ public:
     void processInputKo(GroupObject &ko) override;
 
     // Öffentliche Variablen für Lautstärke und Quelle
-    int currentVolume = -1;
-    String currentSource = "initValue";
+    int currentVolume = 0;
+    uint icurrentSource = PT_Source_network; 
     bool muteMode = false;  // Speichert den MUTE-Zustand
     bool beepEnabled = false;
     bool virtualBassEnabled = false; 

@@ -649,8 +649,8 @@
         "Value": "1",
         "IsInUnion": false,
         "IsUnionDefault": false,
-        "Offset": -1,
-        "OffsetBit": -1,
+        "Offset": 0,
+        "OffsetBit": 6,
         "Text": [
           {
             "$type": "Kaenx.Creator.Models.Translation, Kaenx.Creator.Share",
@@ -1342,7 +1342,7 @@
       {
         "$type": "Kaenx.Creator.Models.ComObject, Kaenx.Creator.Share",
         "UId": 3,
-        "Id": 3,
+        "Id": 5,
         "Name": "volume_value",
         "Text": [
           {
@@ -1445,7 +1445,7 @@
       {
         "$type": "Kaenx.Creator.Models.ComObject, Kaenx.Creator.Share",
         "UId": 5,
-        "Id": 4,
+        "Id": 3,
         "Name": "volume_inc",
         "Text": [
           {
@@ -1650,7 +1650,7 @@
       {
         "$type": "Kaenx.Creator.Models.ComObject, Kaenx.Creator.Share",
         "UId": 6,
-        "Id": 5,
+        "Id": 4,
         "Name": "volume_dec",
         "Text": [
           {
@@ -1896,24 +1896,54 @@
         "ObjectSize": 8,
         "SubTypeNumber": null,
         "SubType": null,
-        "TypeNumber": "4",
+        "TypeNumber": "5",
         "Type": {
           "$type": "Kaenx.Creator.Models.DataPointType, Kaenx.Creator.Share",
-          "Name": "4.xxx character",
-          "Number": "4",
+          "Name": "5.xxx 8-bit unsigned value",
+          "Number": "5",
           "Size": 8,
           "SubTypes": [
             {
               "$type": "Kaenx.Creator.Models.DataPointSubType, Kaenx.Creator.Share",
-              "Name": "4.001 character (ASCII)",
+              "Name": "5.001 percentage (0..100%)",
               "Number": "1",
-              "ParentNumber": "4"
+              "ParentNumber": "5"
             },
             {
               "$type": "Kaenx.Creator.Models.DataPointSubType, Kaenx.Creator.Share",
-              "Name": "4.002 character (ISO 8859-1)",
-              "Number": "2",
-              "ParentNumber": "4"
+              "Name": "5.003 angle (degrees)",
+              "Number": "3",
+              "ParentNumber": "5"
+            },
+            {
+              "$type": "Kaenx.Creator.Models.DataPointSubType, Kaenx.Creator.Share",
+              "Name": "5.004 percentage (0..255%)",
+              "Number": "4",
+              "ParentNumber": "5"
+            },
+            {
+              "$type": "Kaenx.Creator.Models.DataPointSubType, Kaenx.Creator.Share",
+              "Name": "5.005 ratio (0..255)",
+              "Number": "5",
+              "ParentNumber": "5"
+            },
+            {
+              "$type": "Kaenx.Creator.Models.DataPointSubType, Kaenx.Creator.Share",
+              "Name": "5.006 tariff (0..255)",
+              "Number": "6",
+              "ParentNumber": "5"
+            },
+            {
+              "$type": "Kaenx.Creator.Models.DataPointSubType, Kaenx.Creator.Share",
+              "Name": "5.010 counter pulses (0..255)",
+              "Number": "10",
+              "ParentNumber": "5"
+            },
+            {
+              "$type": "Kaenx.Creator.Models.DataPointSubType, Kaenx.Creator.Share",
+              "Name": "5.100 fan stage (0..255)",
+              "Number": "100",
+              "ParentNumber": "5"
             }
           ]
         },
@@ -3814,7 +3844,7 @@
     "LastParameterRefId": 6,
     "LastDynModuleId": 0,
     "LastDynSeparatorId": 0,
-    "HighestComNumber": 10
+    "HighestComNumber": 11
   },
   "Catalog": [
     {

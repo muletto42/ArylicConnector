@@ -40,19 +40,9 @@ void ArylicUART::loop()
 
 void ArylicUART::setup()
 {
-    
-  
-}
-
-void ArylicUART::config(unsigned long baud, int txPin, int rxPin)
-{
-// Pins direkt vor begin() setzen // FIXME TODO funktioniert noch nicht!!!
-    //_serial.setPinout(txPin, rxPin);
-    _serial.begin(baud);
-   // _serial.setTX(txPin);
-   // _serial.setRX(rxPin);
-    
-    //delay(100); // Kurze Verzögerung, damit sich die Verbindung stabilisiert
+    _serial.setTX(ARYLIC_TX_PIN);
+    _serial.setRX(ARYLIC_RX_PIN);
+    _serial.begin(BAUD_ARLYIC);
 }
 
 void ArylicUART::sendRawCommandToArylic(const String &command)
@@ -60,8 +50,7 @@ void ArylicUART::sendRawCommandToArylic(const String &command)
     _serial.flush(); // Wartet, bis die Übertragung der ausgehenden seriellen Daten abgeschlossen ist.
     _serial.print(command + "\r\n");
 #if DEBUG
-    Serial.print("[SEND] ");
-    Serial.println(command);
+    logDebugP("[SEND]: %s", command);
 #endif
 }
 
@@ -109,6 +98,50 @@ void ArylicUART::setVolume(int volume)
     sendRawCommandToArylic("VOL:" + String(volume));
 }
 
+void ArylicUART::setSource(uint sourcenumber) // SRC
+{
+    String source = " ";
+    switch (sourcenumber)
+    {
+        case PT_Source_network:
+        {
+            source = "NET";
+        }
+        case PT_Source_bluetooth:
+        {
+            source = "BT";
+        }
+        break;
+        case PT_Source_USBDAC:
+        {
+            source = "USBDAC";
+        }
+        break;
+        case PT_Source_linein:
+        {
+            source = "LINE-IN";
+        }
+        break;
+        case PT_Source_Optical:
+        {
+            source = "OPT";
+        }
+        break;
+        case PT_Source_Coaxial:
+        {
+            source = "COAX";
+        }
+        break;
+
+        default:
+            break;
+    }
+
+    sendRawCommandToArylic("SRC:" + source);
+}
+
+// Overload für String-Parameter
+// Diese Methode wird aufgerufen, wenn der Quellparameter ein String ist
 void ArylicUART::setSource(const String &source) // SRC
 {
     sendRawCommandToArylic("SRC:" + source);
@@ -189,9 +222,10 @@ void ArylicUART::processInputKo(GroupObject &iKo)
         break;
         case APP_Kosource:
         {
-            currentSource = KoAPP_volume_value.value(DPT_String_ASCII);
-            setSource(currentSource);
-            logDebugP("setSource: %s", currentSource);
+            uint icurrentSource;
+            icurrentSource = (uint8_t) KoAPP_source.value(DPT_Value_1_Ucount);
+            setSource(icurrentSource);
+            logDebugP("setSource: %d", icurrentSource);
         }
         break;
     }
@@ -224,11 +258,11 @@ void ArylicUART::handleIncomingData(void)
 void ArylicUART::processUARTCommand(const String &commandType, const String &commandValue)
 {
     // Logik zum Verarbeiten der UART-Kommandos vom ArlyicAmp
-
+    //string currentSource;
     if (commandType == "SRC")
     {
-        currentSource = commandValue;
-        logDebugP("[INFO] Quelle aktualisiert: %s", currentSource);
+        // currentSource = commandValue;
+        logDebugP("[INFO] Quelle aktualisiert: %s", commandValue);
     }
     else if (commandType == "VOL")
     {
