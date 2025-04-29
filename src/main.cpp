@@ -78,8 +78,10 @@ void loop()
 
     if (millis() - lastHeartbeat >= heartbeatInterval) 
     {
-      Serial.println("lebt: gebe ein: 'vol <0-100>' oder 'src <id>'");
+      //Serial.println("lebt: gebe ein: 'vol <0-100>' oder 'src <id>'");
       lastHeartbeat = millis();
+      arylic.sendRawCommandToArylic("SRC;");
+      arylic.sendRawCommandToArylic("VOL;");
     }
 #endif
 

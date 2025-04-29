@@ -34,7 +34,7 @@ void ArylicUART::begin(unsigned long baud, int txPin, int rxPin)
 void ArylicUART::sendRawCommandToArylic(const String &command)
 {
     _serial.flush(); // Wartet, bis die Übertragung der ausgehenden seriellen Daten abgeschlossen ist.
-    _serial.print(command + "\r\n");
+    _serial.print(command+"\r\n");
 #if DEBUG
     Serial.print("[SEND] ");
     Serial.println(command);
@@ -88,6 +88,7 @@ void ArylicUART::setVolume(int volume)
 void ArylicUART::setSource(const String &source) // SRC
 {
     sendRawCommandToArylic("SRC:" + source);
+    
 }
 
 void ArylicUART::setMute(int onoff)
