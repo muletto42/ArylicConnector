@@ -20,10 +20,10 @@
 // Serial2 is UART1 --> frei
 
 #define ArylicUARTPORT Serial2 // Serial2 = UART1 //auto& ArylicUART = Serial1; //das geht auch als Namensgeber
-#define ARYLIC_TX_PIN 6        // UART1 TX mit Amp RX verbinden //GP4
-#define ARYLIC_RX_PIN 7        // UART1 RX mit Amp TX verbinden //GP5
-// #define ARYLIC_TX			11 // UART1 TX mit Amp RX verbinden //GP8
-// #define ARYLIC_RX	    12 // UART1 RX mit Amp TX verbinden //GP9
+//#define ARYLIC_TX_PIN 6        // UART1 TX mit Amp RX verbinden //GP4
+//#define ARYLIC_RX_PIN 7        // UART1 RX mit Amp TX verbinden //GP5
+#define ARYLIC_TX_PIN	11      // UART1 TX mit Amp RX verbinden //GP8
+#define ARYLIC_RX_PIN	12      // UART1 RX mit Amp TX verbinden //GP9
 #define BAUD_ARLYIC 115200 // Baudrate für Arylic UART
 
 #endif
