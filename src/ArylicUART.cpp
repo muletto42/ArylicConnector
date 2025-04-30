@@ -16,8 +16,6 @@
 #include "ArylicUART.h"
 #include "versions.h"
 
-#define DEBUG 1 // auskommentieren wenn nicht benötigt
-
 // Give your Module a name
 // it will be displayed when you use the method log("Hello")
 //  -> Log     Hello
@@ -48,10 +46,29 @@ void ArylicUART::setup()
 void ArylicUART::sendRawCommandToArylic(const String &command)
 {
     _serial.flush(); // Wartet, bis die Übertragung der ausgehenden seriellen Daten abgeschlossen ist.
-    _serial.print(command + "\r\n");
+    _serial.print(command+"\r\n");
 #if DEBUG
     logDebugP("[SEND]: %s", command);
 #endif
+}
+
+void ArylicUART::getDeviceStatus (void) // get device status, available in network playback and bluetooth
+{
+    sendRawCommandToArylic("STA;");  
+    /*
+    Device status summary, and the response message {states} will 
+    consist with: current source,mute,volume,treble,bass,net,internet,playing,led,upgrading.
+    STA response sample
+    NET,0,33,-2,0,1,1,1,1,0
+    */
+}
+void ArylicUART::getVolume() // get volume, available in network playback and bluetooth
+{
+    sendRawCommandToArylic("VOL;");  
+}
+void ArylicUART::getSource() // get source, available in network playback and bluetooth
+{
+    sendRawCommandToArylic("SRC;");  
 }
 
 void ArylicUART::setLoopShuffleMode(const String &loopmode) // LPM[:{loopmode}]   set/get loop and shuffle mode, available in network playback.
@@ -64,38 +81,38 @@ void ArylicUART::setLoopShuffleMode(const String &loopmode) // LPM[:{loopmode}] 
     SHUFFLE 	    shuffle and stop when all tracks played
     SEQUENCE 	    stop when reach end of playlist
     */
-    sendRawCommandToArylic("LPM:" + loopmode);
+    sendRawCommandToArylic("LPM:" + loopmode +";");
 }
 
 void ArylicUART::playPause() // POP play or pause, available in network playback and bluetooth
 {
-    sendRawCommandToArylic("POP");
+    sendRawCommandToArylic("POP;");
 }
 
 void ArylicUART::stop() // STP stop, available only in network playback
 {
-    sendRawCommandToArylic("STP");
+    sendRawCommandToArylic("STP;");
 }
 
 void ArylicUART::next() // NXT next track, available in network playback and bluetooth
 {
-    sendRawCommandToArylic("NXT");
+    sendRawCommandToArylic("NXT;");
 }
 
 void ArylicUART::previous() // PRE previous track, available in network playback and bluetooth
 {
-    sendRawCommandToArylic("PRE");
+    sendRawCommandToArylic("PRE;");
 }
 
 void ArylicUART::playPreset(int presetNum) // start to play preset playlist
 {
-    sendRawCommandToArylic("VOL:" + String(presetNum));
+    sendRawCommandToArylic("PST:"+String(presetNum)+";");
 }
 
 void ArylicUART::setVolume(int volume)
 {
     volume = constrain(volume, 0, 100);
-    sendRawCommandToArylic("VOL:" + String(volume));
+    sendRawCommandToArylic("VOL:"+String(volume)+";");
 }
 
 void ArylicUART::setSource(uint sourcenumber) // SRC
@@ -137,19 +154,19 @@ void ArylicUART::setSource(uint sourcenumber) // SRC
             break;
     }
 
-    sendRawCommandToArylic("SRC:" + source);
+    sendRawCommandToArylic("SRC:"+source+";");
 }
 
 // Overload für String-Parameter
 // Diese Methode wird aufgerufen, wenn der Quellparameter ein String ist
 void ArylicUART::setSource(const String &source) // SRC
 {
-    sendRawCommandToArylic("SRC:" + source);
+    sendRawCommandToArylic("SRC:" + source + ";");
 }
 
 void ArylicUART::setMute(int onoff)
 {
-    sendRawCommandToArylic("MUT:" + String(onoff));
+    sendRawCommandToArylic("MUT:" + String(onoff) + ";");
 }
 
 // will be called once a KO received a telegram
@@ -247,7 +264,7 @@ void ArylicUART::handleIncomingData(void)
             String commandValue = receivedData.substring(separatorIndex + 1);
 
             // Daten auswerten
-            processUARTCommand(commandType, commandValue);
+            processReceivedUARTCommand(commandType, commandValue);
         }
     }
 }
@@ -255,7 +272,7 @@ void ArylicUART::handleIncomingData(void)
 /*---------------------------------------------------------------------------------------------------
                       Funktion zur Verarbeitung empfangener UART-Kommandos
  ---------------------------------------------------------------------------------------------------*/
-void ArylicUART::processUARTCommand(const String &commandType, const String &commandValue)
+void ArylicUART::processReceivedUARTCommand(const String &commandType, const String &commandValue)
 {
     // Logik zum Verarbeiten der UART-Kommandos vom ArlyicAmp
     //string currentSource;
@@ -276,26 +293,19 @@ void ArylicUART::processUARTCommand(const String &commandType, const String &com
     }
     else if (commandType == "BAS")
     {
-        // dispBass = commandValue.toInt();
-        // showNumberParam("Bass", dispBass);
+        currentBassTone = commandValue.toInt();
+        logDebugP("[INFO] Bass aktualisiert:  %d", currentBassTone);
     }
     else if (commandType == "TRE")
     {
-        // dispTreble = commandValue.toInt();
-        // showNumberParam("Treble", dispTreble);
+        currentTrebleTone = commandValue.toInt();
+        logDebugP("[INFO] Treble aktualisiert:  %d", currentTrebleTone);
     }
-    //    else if (commandType == "CHN") {
-    //      if (commandValue == "L;") {
-    //          dispChannel = "LEFT";
-    //      } else if (commandValue == "R;") {
-    //          dispChannel = "RIGHT";
-    //      } else if (commandValue == "S;") {
-    //          dispChannel = "STEREO";
-    //      } else {
-    //          dispChannel = "Unknown";
-    //      }
-    //      //showNumberParamTwo("CHN", dispChannel);
-
+    else if (commandType == "MID")
+    {
+        currentMidTone = commandValue.toInt();
+        logDebugP("[INFO] Mid aktualisiert:  %d", currentMidTone);
+    }
     else if (commandType == "LED")
     {
         if (commandValue == "1;")

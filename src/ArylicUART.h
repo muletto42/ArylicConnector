@@ -17,10 +17,9 @@ public:
     // Initialisierung der UART-Verbindung mit TX/RX Pins und Baudrate
     // void config(unsigned long baud, int txPin, int rxPin);
 
-    // Methoden zum Senden von Befehlen und zum Steuern
-    void sendRawCommandToArylic(const String& command);
 
-  
+    
+
     void setSource(uint sourcenumber); // SRC 
     void setSource(const String& source); // SRC
     /*
@@ -32,6 +31,7 @@ public:
     OPT 	    Optical
     COAX 	    Coaxial
     */
+   void getSource(void); 
 
     void playPause(); //POP play or pause, available in network playback and bluetooth
     void stop(); //STP stop, available only in network playback
@@ -49,7 +49,10 @@ public:
     */
 
     void setVolume(int volume);
+    void getVolume(void);
+
     void setMute(int onoff);
+    void getDeviceStatus (void); // get device status, available in network playback and bluetooth
 
 
     void processInputKo(GroupObject &ko) override;
@@ -61,10 +64,15 @@ public:
     bool beepEnabled = false;
     bool virtualBassEnabled = false; 
     bool bluetoothConnected = false; 
+    int currentBassTone = 0;
+    int currentTrebleTone = 0;
+    int currentMidTone = 0;
+    
 private:
     // Private Methode zur Verarbeitung von empfangenen Zeilen
     void handleIncomingData(void);
-    void processUARTCommand(const String& commandType, const String& commandValue);
+    void processReceivedUARTCommand(const String& commandType, const String& commandValue);
+    void sendRawCommandToArylic(const String& command);
 
     // Interne Variablen
     unsigned long _baud = 115200;
