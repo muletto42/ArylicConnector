@@ -46,17 +46,17 @@ void ArylicUART::setup()
 void ArylicUART::sendRawCommandToArylic(const String &command)
 {
     _serial.flush(); // Wartet, bis die Übertragung der ausgehenden seriellen Daten abgeschlossen ist.
-    _serial.print(command+"\r\n");
+    _serial.print(command + "\r\n");
 #if DEBUG
     logDebugP("[SEND]: %s", command);
 #endif
 }
 
-void ArylicUART::getDeviceStatus (void) // get device status, available in network playback and bluetooth
+void ArylicUART::getDeviceStatus(void) // get device status, available in network playback and bluetooth
 {
-    sendRawCommandToArylic("STA;");  
+    sendRawCommandToArylic("STA;");
     /*
-    Device status summary, and the response message {states} will 
+    Device status summary, and the response message {states} will
     consist with: current source,mute,volume,treble,bass,net,internet,playing,led,upgrading.
     STA response sample
     NET,0,33,-2,0,1,1,1,1,0
@@ -64,11 +64,11 @@ void ArylicUART::getDeviceStatus (void) // get device status, available in netwo
 }
 void ArylicUART::getVolume() // get volume, available in network playback and bluetooth
 {
-    sendRawCommandToArylic("VOL;");  
+    sendRawCommandToArylic("VOL;");
 }
 void ArylicUART::getSource() // get source, available in network playback and bluetooth
 {
-    sendRawCommandToArylic("SRC;");  
+    sendRawCommandToArylic("SRC;");
 }
 
 void ArylicUART::setLoopShuffleMode(const String &loopmode) // LPM[:{loopmode}]   set/get loop and shuffle mode, available in network playback.
@@ -81,7 +81,7 @@ void ArylicUART::setLoopShuffleMode(const String &loopmode) // LPM[:{loopmode}] 
     SHUFFLE 	    shuffle and stop when all tracks played
     SEQUENCE 	    stop when reach end of playlist
     */
-    sendRawCommandToArylic("LPM:" + loopmode +";");
+    sendRawCommandToArylic("LPM:" + loopmode + ";");
 }
 
 void ArylicUART::playPause() // POP play or pause, available in network playback and bluetooth
@@ -106,13 +106,13 @@ void ArylicUART::previous() // PRE previous track, available in network playback
 
 void ArylicUART::playPreset(int presetNum) // start to play preset playlist
 {
-    sendRawCommandToArylic("PST:"+String(presetNum)+";");
+    sendRawCommandToArylic("PST:" + String(presetNum) + ";");
 }
 
 void ArylicUART::setVolume(int volume)
 {
     volume = constrain(volume, 0, 100);
-    sendRawCommandToArylic("VOL:"+String(volume)+";");
+    sendRawCommandToArylic("VOL:" + String(volume) + ";");
 }
 
 void ArylicUART::setSource(uint sourcenumber) // SRC
@@ -120,41 +120,41 @@ void ArylicUART::setSource(uint sourcenumber) // SRC
     String source = " ";
     switch (sourcenumber)
     {
-        case PT_Source_network:
-        {
-            source = "NET";
-        }
-        case PT_Source_bluetooth:
-        {
-            source = "BT";
-        }
-        break;
-        case PT_Source_USBDAC:
-        {
-            source = "USBDAC";
-        }
-        break;
-        case PT_Source_linein:
-        {
-            source = "LINE-IN";
-        }
-        break;
-        case PT_Source_Optical:
-        {
-            source = "OPT";
-        }
-        break;
-        case PT_Source_Coaxial:
-        {
-            source = "COAX";
-        }
-        break;
+    case PT_Source_network:
+    {
+        source = "NET";
+    }
+    case PT_Source_bluetooth:
+    {
+        source = "BT";
+    }
+    break;
+    case PT_Source_USBDAC:
+    {
+        source = "USBDAC";
+    }
+    break;
+    case PT_Source_linein:
+    {
+        source = "LINE-IN";
+    }
+    break;
+    case PT_Source_Optical:
+    {
+        source = "OPT";
+    }
+    break;
+    case PT_Source_Coaxial:
+    {
+        source = "COAX";
+    }
+    break;
 
-        default:
-            break;
+    default:
+        break;
     }
 
-    sendRawCommandToArylic("SRC:"+source+";");
+    sendRawCommandToArylic("SRC:" + source + ";");
 }
 
 // Overload für String-Parameter
@@ -175,76 +175,76 @@ void ArylicUART::processInputKo(GroupObject &iKo)
     uint16_t lAsap = iKo.asap();
     switch (lAsap)
     {
-        case APP_Kovolume_inc: // Increase ++
+    case APP_Kovolume_inc: // Increase ++
+    {
+        if (KoAPP_volume_inc.value(DPT_Step))
         {
-            if (KoAPP_volume_inc.value(DPT_Step))
-            {
-                currentVolume++;
-            }
-            else
-            {
-                currentVolume--;
-            }
-            setVolume(currentVolume);
-            logDebugP("setVolume: %d", currentVolume);
+            currentVolume++;
         }
-        break;
-        case APP_Kovolume_dec: // Decrease --
+        else
         {
-            if (KoAPP_volume_inc.value(DPT_Step))
-            {
-                currentVolume++;
-            }
-            else
-            {
-                currentVolume--;
-            }
-            setVolume(currentVolume);
-            logDebugP("setVolume: %d", currentVolume);
+            currentVolume--;
         }
-        break;
-        case APP_Kovolume_value: // SET
+        setVolume(currentVolume);
+        logDebugP("setVolume: %d", currentVolume);
+    }
+    break;
+    case APP_Kovolume_dec: // Decrease --
+    {
+        if (KoAPP_volume_inc.value(DPT_Step))
         {
-            currentVolume = (u_int8_t)KoAPP_volume_value.value(DPT_Scaling);
-            setVolume(currentVolume);
-            logDebugP("setVolume: %d", currentVolume);
+            currentVolume++;
         }
-        break;
-        case APP_Komute_onoff:
+        else
         {
-            muteMode = KoAPP_mute_onoff.value(DPT_Switch);
-            setMute(muteMode);
-            logDebugP("MuteMode: %d", muteMode);
+            currentVolume--;
         }
-        break;
-        case APP_KoPlayPause:
-        {
-            playPause();
-        }
-        break;
-        case APP_KoStop:
-        {
-            stop();
-        }
-        break;
-        case APP_KoNext:
-        {
-            next();
-        }
-        break;
-        case APP_KoPrev:
-        {
-            previous();
-        }
-        break;
-        case APP_Kosource:
-        {
-            uint icurrentSource;
-            icurrentSource = (uint8_t) KoAPP_source.value(DPT_Value_1_Ucount);
-            setSource(icurrentSource);
-            logDebugP("setSource: %d", icurrentSource);
-        }
-        break;
+        setVolume(currentVolume);
+        logDebugP("setVolume: %d", currentVolume);
+    }
+    break;
+    case APP_Kovolume_value: // SET
+    {
+        currentVolume = (u_int8_t)KoAPP_volume_value.value(DPT_Scaling);
+        setVolume(currentVolume);
+        logDebugP("setVolume: %d", currentVolume);
+    }
+    break;
+    case APP_Komute_onoff:
+    {
+        muteMode = KoAPP_mute_onoff.value(DPT_Switch);
+        setMute(muteMode);
+        logDebugP("MuteMode: %d", muteMode);
+    }
+    break;
+    case APP_KoPlayPause:
+    {
+        playPause();
+    }
+    break;
+    case APP_KoStop:
+    {
+        stop();
+    }
+    break;
+    case APP_KoNext:
+    {
+        next();
+    }
+    break;
+    case APP_KoPrev:
+    {
+        previous();
+    }
+    break;
+    case APP_Kosource:
+    {
+        uint icurrentSource;
+        icurrentSource = (uint8_t)KoAPP_source.value(DPT_Value_1_Ucount);
+        setSource(icurrentSource);
+        logDebugP("setSource: %d", icurrentSource);
+    }
+    break;
     }
 }
 
@@ -275,7 +275,7 @@ void ArylicUART::handleIncomingData(void)
 void ArylicUART::processReceivedUARTCommand(const String &commandType, const String &commandValue)
 {
     // Logik zum Verarbeiten der UART-Kommandos vom ArlyicAmp
-    //string currentSource;
+    // string currentSource;
     if (commandType == "SRC")
     {
         // currentSource = commandValue;
