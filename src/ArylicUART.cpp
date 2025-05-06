@@ -34,6 +34,15 @@ const std::string ArylicUART::version()
 void ArylicUART::loop()
 {
     handleIncomingData();
+    static unsigned long lastMillis = 0; // Speichert den letzten Zeitpunkt
+    unsigned long currentMillis = millis(); // Aktuelle Zeit in Millisekunden
+
+    // Prüfen, ob eine Minute (60.000 Millisekunden) vergangen ist
+    if (currentMillis - lastMillis >= 60000)
+    {
+        lastMillis = currentMillis; // Aktualisiere den letzten Zeitpunkt
+        getDeviceStatus(); // Rufe den Status des Geräts ab
+    }
 }
 
 void ArylicUART::setup()
@@ -43,7 +52,7 @@ void ArylicUART::setup()
     _serial.begin(BAUD_ARLYIC);
 }
 
-void ArylicUART::sendRawCommandToArylic(const String &command)
+void ArylicUART::sendRawCommandToArylic(const String command)
 {
     _serial.flush(); // Wartet, bis die Übertragung der ausgehenden seriellen Daten abgeschlossen ist.
     _serial.print(command + "\r\n");
@@ -181,10 +190,6 @@ void ArylicUART::processInputKo(GroupObject &iKo)
         {
             currentVolume++;
         }
-        else
-        {
-            currentVolume--;
-        }
         setVolume(currentVolume);
         logDebugP("setVolume: %d", currentVolume);
     }
@@ -192,10 +197,6 @@ void ArylicUART::processInputKo(GroupObject &iKo)
     case APP_Kovolume_dec: // Decrease --
     {
         if (KoAPP_volume_inc.value(DPT_Step))
-        {
-            currentVolume++;
-        }
-        else
         {
             currentVolume--;
         }
@@ -212,9 +213,9 @@ void ArylicUART::processInputKo(GroupObject &iKo)
     break;
     case APP_Komute_onoff:
     {
-        muteMode = KoAPP_mute_onoff.value(DPT_Switch);
-        setMute(muteMode);
-        logDebugP("MuteMode: %d", muteMode);
+        muteStatus = KoAPP_mute_onoff.value(DPT_Switch);
+        setMute(muteStatus);
+        logDebugP("MuteMode: %d", muteStatus);
     }
     break;
     case APP_KoPlayPause:
@@ -269,17 +270,54 @@ void ArylicUART::handleIncomingData(void)
     }
 }
 
+int ArylicUART::sourceStringToInt(const String source)
+{
+    if (source == "NET")
+    {
+        return PT_Source_network;
+    }
+    else if (source == "BT")
+    {
+        return PT_Source_bluetooth;
+    }
+    else if (source == "USBDAC")
+    {
+        return PT_Source_USBDAC;
+    }
+    else if (source == "LINE-IN")
+    {
+        return PT_Source_linein;
+    }
+    else if (source == "OPT")
+    {
+        return PT_Source_Optical;
+    }
+    else if (source == "COAX")
+    {
+        return PT_Source_Coaxial;
+    }
+    else
+    {
+        logDebugP("[ERROR] Unbekannte Quelle: %s", source);
+        //return -1; // Fehlerwert
+    }
+    return 99; // Fehlerwert
+}
+
+
 /*---------------------------------------------------------------------------------------------------
                       Funktion zur Verarbeitung empfangener UART-Kommandos
  ---------------------------------------------------------------------------------------------------*/
-void ArylicUART::processReceivedUARTCommand(const String &commandType, const String &commandValue)
+void ArylicUART::processReceivedUARTCommand(const String commandType, const String commandValue)
 {
     // Logik zum Verarbeiten der UART-Kommandos vom ArlyicAmp
     // string currentSource;
     if (commandType == "SRC")
     {
-        // currentSource = commandValue;
-        logDebugP("[INFO] Quelle aktualisiert: %s", commandValue);
+        string_currentSource = commandValue;
+        icurrentSource = sourceStringToInt(string_currentSource);
+        logDebugP("[INFO] Quelle aktualisiert: %s", string_currentSource);
+        logDebugP("[INFO] Quelle aktualisiert int: %d", icurrentSource);
     }
     else if (commandType == "VOL")
     {
@@ -288,8 +326,8 @@ void ArylicUART::processReceivedUARTCommand(const String &commandType, const Str
     }
     else if (commandType == "MUT")
     {
-        muteMode = (bool)commandValue.toInt();
-        logDebugP("[INFO] Mute Status:  %d", muteMode);
+        muteStatus = (bool)commandValue.toInt();
+        logDebugP("[INFO] Mute Status:  %d", muteStatus);
     }
     else if (commandType == "BAS")
     {
@@ -310,15 +348,13 @@ void ArylicUART::processReceivedUARTCommand(const String &commandType, const Str
     {
         if (commandValue == "1;")
         {
+            ledStatus = true;
             logDebugP("LED ON");
-            // digitalWrite(LED_PIN, HIGH);
-            Serial.println("LED eingeschaltet");
         }
         else if (commandValue == "0;")
         {
+            ledStatus = false;
             logDebugP("LED OFF");
-            // digitalWrite(LED_PIN, LOW);
-            Serial.println("LED ausgeschaltet");
         }
     }
     else if (commandType == "BTC")
@@ -360,6 +396,58 @@ void ArylicUART::processReceivedUARTCommand(const String &commandType, const Str
             logDebugP("BEEP OFF");
         }
     }
+    else if (commandType == "STA")
+    {
+        processSTACommand(commandValue);
+        logDebugP("commandValue: %s", commandValue);
+    }
+}
+
+void ArylicUART::processSTACommand(const String commandValue)
+{
+    // Beispiel: NET,0,33,-2,0,1,1,1,1,0
+    // Zerlege die empfangenen Daten anhand des Trennzeichens ','
+    // STA
+    // Device status summary, and the response message {states} will consist with: 
+    // current source,mute,volume,treble,bass,net,internet,playing,led,upgrading.
+
+    std::vector<String> statusParts;
+    int startIndex = 0;
+    int separatorIndex = commandValue.indexOf(',');
+
+    while (separatorIndex != -1)
+    {
+        statusParts.push_back(commandValue.substring(startIndex, separatorIndex));
+        startIndex = separatorIndex + 1;
+        separatorIndex = commandValue.indexOf(',', startIndex);
+    }
+    statusParts.push_back(commandValue.substring(startIndex)); // Letzter Teil
+
+    // Überprüfen, ob genügend Daten vorhanden sind
+    if (statusParts.size() < 10)
+    {
+        logDebugP("[ERROR] Ungültige STA-Daten: %s", commandValue);
+        return;
+    }
+
+    // Werte zuweisen
+     string_currentSource = statusParts[0];
+     icurrentSource = sourceStringToInt(string_currentSource);
+
+     muteStatus = statusParts[1].toInt();
+     currentVolume = statusParts[2].toInt();
+     currentTrebleTone = statusParts[3].toInt();
+     currentBassTone = statusParts[4].toInt();
+     netStatus = statusParts[5].toInt();
+     internetStatus = statusParts[6].toInt();
+     playingStatus = statusParts[7].toInt();
+     ledStatus = statusParts[8].toInt();
+     upgradingStatus = statusParts[9].toInt();
+
+    // Debug-Ausgabe
+    logDebugP("[STA] Quelle: %s, Quelle int: %d, Mute: %d, Lautstärke: %d, Treble: %d, Bass: %d, Net: %d, Internet: %d, Playing: %d, LED: %d, Upgrading: %d",
+              string_currentSource, icurrentSource, muteStatus, currentVolume, currentTrebleTone, currentBassTone, netStatus, internetStatus, playingStatus, ledStatus, upgradingStatus);
+
 }
 
 ArylicUART openknxArylicUARTModule;

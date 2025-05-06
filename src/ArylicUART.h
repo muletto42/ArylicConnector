@@ -56,19 +56,27 @@ public:
     // Öffentliche Variablen für Lautstärke und Quelle
     int currentVolume = 0;
     uint icurrentSource = PT_Source_network;
-    bool muteMode = false; // Speichert den MUTE-Zustand
+    String string_currentSource = "NET";
+    bool muteStatus = false; // Speichert den MUTE-Zustand
     bool beepEnabled = false;
     bool virtualBassEnabled = false;
     bool bluetoothConnected = false;
     int currentBassTone = 0;
     int currentTrebleTone = 0;
     int currentMidTone = 0;
+    bool netStatus = false;
+    bool internetStatus = false;
+    bool playingStatus = false;
+    bool ledStatus = false;
+    bool upgradingStatus = false;
 
 private:
     // Private Methode zur Verarbeitung von empfangenen Zeilen
     void handleIncomingData(void);
-    void processReceivedUARTCommand(const String &commandType, const String &commandValue);
-    void sendRawCommandToArylic(const String &command);
+    void processReceivedUARTCommand(const String commandType, const String commandValue);
+    void sendRawCommandToArylic(const String command);
+    void processSTACommand(const String commandValue);
+    int sourceStringToInt(const String source);
 
     // Interne Variablen
     unsigned long _baud = 115200;
