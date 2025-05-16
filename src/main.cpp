@@ -3,6 +3,9 @@
 #include "FileTransferModule.h"
 #include "UsbExchangeModule.h"
 #include "ArylicUART.h"
+#include "Logic.h"
+#include "SwitchActuatorModule.h"
+#include "GPIOModule.h"
 
 
 void setup()
@@ -11,12 +14,14 @@ void setup()
     const uint8_t firmwareRevision = 0;
     openknx.init(firmwareRevision);
 
-    openknx.addModule(9, openknxFileTransferModule);
     openknx.addModule(8, openknxUsbExchangeModule);
 
-    //openknx.addModule(1, openknxLogic);
-
+    openknx.addModule(1, openknxLogic);
+    
     openknx.addModule(2, openknxArylicUARTModule);
+    openknx.addModule(3, openknxFileTransferModule);
+    openknx.addModule(4, openknxGPIOModule);
+    openknx.addModule(5, openknxSwitchActuatorModule); 
 
     openknx.setup();
 }
